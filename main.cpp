@@ -14,6 +14,19 @@ typedef struct
         Point*Start;
         Point*End;
     }Trunk;
+    void drawCircle(Point*ptr)
+        {
+            int i;
+            float oneDegree=M_PI/180;
+            glColor3ub(77,168,59);
+            glBegin(GL_POLYGON);
+            for(i=0;i<=360;i++)
+            {
+            glVertex2f(ptr->x+4*cos(i*oneDegree),ptr->y+4*sin(i*oneDegree));
+            }
+            glEnd();
+            glFlush();
+        }
            void drawTrunkLine(double length,Trunk*ptr,Trunk*leftTrunk,Trunk*rightTrunk)
          {
              int c=0,d=0,k=0;double sum=0;
@@ -21,7 +34,6 @@ typedef struct
               double x0=ptr->Start->x; double y0=ptr->Start->y;
            double x1=ptr->End->x; double y1=ptr->End->y;
            double m=(y1-y0)/(x1-x0);
-          printf("\n%f",m);
            double xt,yt;
              if(isinf(m)||(m>58)||(m<-58))
           {
@@ -80,16 +92,13 @@ typedef struct
                 }
                 rightTrunk->End->x=T3[0][0];
                 rightTrunk->End->y=T3[1][0];
-                if(length<9.0)
+                glLineWidth((length/75)*9.0);
+                if(length<10.05)
                 {
+                    glColor3ub(210,105,30);
+                    //glColor3ub(58,95,11);
                     //glColor3ub(123,104,238);
-                    glColor3ub(210,105,30);
-                }
-                else
-                {
-                    glColor3ub(210,105,30);
-                }
-                glBegin(GL_LINES);
+                        glBegin(GL_LINES);
                 glVertex2f(leftTrunk->Start->x,leftTrunk->Start->y);
                 glVertex2f(leftTrunk->End->x,leftTrunk->End->y);
                 glEnd();
@@ -98,12 +107,31 @@ typedef struct
                 glVertex2f(rightTrunk->End->x,rightTrunk->End->y);
                 glEnd();
                 glFlush();
+                drawCircle(leftTrunk->End);
+                drawCircle(rightTrunk->End);
+                }
+                else
+                {
+                    glColor3ub(210,105,30);
+                    glBegin(GL_LINES);
+                glVertex2f(leftTrunk->Start->x,leftTrunk->Start->y);
+                glVertex2f(leftTrunk->End->x,leftTrunk->End->y);
+                glEnd();
+                glBegin(GL_LINES);
+                glVertex2f(rightTrunk->Start->x,rightTrunk->Start->y);
+                glVertex2f(rightTrunk->End->x,rightTrunk->End->y);
+                glEnd();
+                glFlush();
+
+                }
+
          }
     void fractalTreeBranch(Trunk*ptr)
         {
            double x1=ptr->Start->x; double y1=ptr->Start->y;
            double x2=ptr->End->x; double y2=ptr->End->y;
            double length=sqrt(pow(y2-y1,2)+pow(x2-x1,2))*0.8;
+           //printf("\n%lf",length);
           Trunk*leftTrunk=(Trunk*)malloc(sizeof(Trunk));
           Trunk*rightTrunk=(Trunk*)malloc(sizeof(Trunk));
           leftTrunk->Start=(Point*)malloc(sizeof(Point));leftTrunk->End=(Point*)malloc(sizeof(Point));
@@ -129,6 +157,7 @@ typedef struct
     {
        glClear(GL_COLOR_BUFFER_BIT);
        glColor3ub(210,105,30);
+       glLineWidth(7.0);
        glBegin(GL_LINES);
        glVertex2f(350,125);
        glVertex2f(350,200);
@@ -150,7 +179,7 @@ typedef struct
         gluOrtho2D(0.0f, 700.0f, 0.0f, 500);
         //glPointSize(5.0f) will work only with GL_POINTS not with GL_LINE
         //For gl_LINES you have to use gl_Line_Width
-        glLineWidth(3.0f);
+        //glLineWidth(7.0f);
         //glEnable(0x8642);
         //glEnable(GL_LINE_SMOOTH);
          }
